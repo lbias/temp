@@ -1,0 +1,20 @@
+.row
+  h4.center-align More Wonderful Things
+  = link_to 'Back', matches_path
+/ table.responsive-table.bordered
+/   thead
+/     tr
+/       th Ranking
+/       th.center-align Team Name
+/       th.right-align Winning Percentage
+/ 
+/   tbody
+/     - @users.each do |user|
+/       tr
+/         td= :i + 1          
+/         td.center-align
+/           = user.matches_stat
+/         td= user.best_partner.try(:name)
+/         td.right-align
+/           => link_to content_tag(:i, 'edit', class: 'material-icons'), [:edit, user], class: 'btn-floating', title: 'Edit'
+/           = link_to content_tag(:i, 'delete', class: 'material-icons'), user, method: :delete, class: 'btn-floating red', title: 'Delete'
