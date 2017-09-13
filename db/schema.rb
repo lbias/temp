@@ -11,45 +11,54 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150929093057) do
+ActiveRecord::Schema.define(version: 20160419114438) do
 
-  create_table "games", force: :cascade do |t|
-    t.integer  "score1",     default: 0, null: false
-    t.integer  "score2",     default: 0, null: false
-    t.integer  "match_id"
-    t.integer  "winner_id"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-  end
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
-  create_table "matches", force: :cascade do |t|
-    t.integer  "match_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "team_users", force: :cascade do |t|
-    t.integer  "team_id"
+  create_table "shared_user_locations", force: :cascade do |t|
     t.integer  "user_id"
+    t.integer  "user_location_id", null: false
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
+  add_index "shared_user_locations", ["user_id"], name: "index_shared_user_locations_on_user_id", using: :btree
+  add_index "shared_user_locations", ["user_location_id"], name: "index_shared_user_locations_on_user_location_id", using: :btree
+
+  create_table "user_locations", force: :cascade do |t|
+    t.integer  "user_id",    null: false
+    t.float    "latitude"
+    t.float    "longitude"
+    t.boolean  "public"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  add_index "team_users", ["team_id"], name: "index_team_users_on_team_id"
-  add_index "team_users", ["user_id"], name: "index_team_users_on_user_id"
-
-  create_table "teams", force: :cascade do |t|
-    t.string   "color"
-    t.integer  "match_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
+  add_index "user_locations", ["user_id"], name: "index_user_locations_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
-    t.string   "first_name"
-    t.string   "last_name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "email",                  default: "", null: false
+    t.string   "user_name"
+    t.string   "encrypted_password",     default: "", null: false
+    t.integer  "friend_id"
+    t.string   "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer  "sign_in_count",          default: 0,  null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.inet     "current_sign_in_ip"
+    t.inet     "last_sign_in_ip"
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
   end
 
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["friend_id"], name: "index_users_on_friend_id", using: :btree
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+
+  add_foreign_key "shared_user_locations", "user_locations"
+  add_foreign_key "shared_user_locations", "users"
+  add_foreign_key "user_locations", "users"
 end

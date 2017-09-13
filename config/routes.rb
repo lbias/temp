@@ -1,10 +1,8 @@
 Rails.application.routes.draw do
+  devise_for :users
 
-  root to: 'users#index'
-  resources :users
-  resources :matches, except: [:edit, :update] do
-    resources :games, only: [:create, :destroy]
-  end
-  resources :statistics
-
+  resources :home, only: [:show, :public_locations]
+  resources :user_locations, only: :create
+  root 'home#show'
+  get '/:user_name', to: 'home#public_locations'
 end
